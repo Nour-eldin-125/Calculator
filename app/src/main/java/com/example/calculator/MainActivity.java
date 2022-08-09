@@ -9,9 +9,13 @@ import android.widget.Toast;
 
 import com.example.calculator.databinding.ActivityMainBinding;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 public class MainActivity extends AppCompatActivity {
 
     String numbers = "0";
+    NumberFormat numFormat;
     private ActivityMainBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,7 +23,21 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
+        numFormat = new DecimalFormat("0.#####E0");
 
+    }
+
+    private void checkNumber (String num){
+        int count = num.length();
+        if (num.contains(".") || num.contains("-"))
+            count--;
+        if (count>10){
+            numbers = (numFormat.format(Double.parseDouble(numbers))).toString();
+            bindToTV(numbers);
+        }
+        else {
+            bindToTV(num);
+        }
     }
 
     @Override
@@ -44,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
         binding.btnBack.setOnClickListener(clrMethodsClickec);
 
 
+// ======================================================================================
+//        ========================== Handling Sign Button ===============================
+// ======================================================================================
         binding.btnSign.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -55,28 +76,42 @@ public class MainActivity extends AppCompatActivity {
                         double value = Double.parseDouble(numbers);
                         value *= -1;
                         numbers = Double.toString(value);
-                        binding.tvCalculations.setText(numbers);
+                        bindToTV(numbers);
                     }
                     else {
                         int value = Integer.parseInt(numbers);
                         value *= -1;
                         numbers = Integer.toString(value);
-                        binding.tvCalculations.setText(numbers);
+                        bindToTV(numbers);
                     }
                 }
             }
         });
 
+// ======================================================================================
+//        =========================== Handling Point Button =============================
+// ======================================================================================
+
         binding.btnPoint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                if (numbers.contains(".")) {
+//                        Do Nothing
+                } else {
+                    numbers += ".";
+                    bindToTV(numbers);
+                }
 
             }
         });
 
     }
 
+
+// ======================================================================================
 //    the Implementation of the numbers buttons adding them to the text view :
+// ======================================================================================
 
     View.OnClickListener btnClicked = new View.OnClickListener() {
         @Override
@@ -91,12 +126,13 @@ public class MainActivity extends AppCompatActivity {
             else{
                 numbers += btn.getText().toString();
             }
-            binding.tvCalculations.setText(numbers);
+            checkNumber(numbers);
         }
     };
 
-
+// ======================================================================================
 //    the Implementation of the Clear button and the Back button :
+// ======================================================================================
 
     View.OnClickListener clrMethodsClickec = new View.OnClickListener() {
         @Override
@@ -107,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
             switch (view.getId()){
                 case R.id.btn_Clr:
                     numbers = "0";
-                    binding.tvCalculations.setText("");
+                    bindToTV("");
                     break;
 
                 case R.id.btn_Back:
@@ -119,16 +155,17 @@ public class MainActivity extends AppCompatActivity {
 
                             }else {
                                 numbers = numbers.substring(0,numbers.length()-1);
-                                binding.tvCalculations.setText(numbers);
-                            }
+                        checkNumber(numbers);
+                    }
                     break;
 
             }
         }
     };
 
-
+// ======================================================================================
 //    the implementation of the Basic operations  + - / * :
+// ======================================================================================
 
     View.OnClickListener opClicked = new View.OnClickListener() {
         @Override
@@ -136,4 +173,8 @@ public class MainActivity extends AppCompatActivity {
             //TODO Add the basic operations of the Calculator :
         }
     };
+
+    private void bindToTV(String numbers) {
+        binding.tvCalculations.setText(numbers);
+    }
 }
