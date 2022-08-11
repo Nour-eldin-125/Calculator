@@ -1,21 +1,19 @@
 package com.example.calculator;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.calculator.databinding.ActivityMainBinding;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
+import com.example.calculator.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
-    String numbers = "0";
-    NumberFormat numFormat;
+    Calculator calc;
     private ActivityMainBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,142 +21,160 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
-        numFormat = new DecimalFormat("0.#####E0");
-
-    }
-
-    private void checkNumber (String num){
-        int count = num.length();
-        if (num.contains(".") || num.contains("-"))
-            count--;
-        if (count>10){
-            numbers = (numFormat.format(Double.parseDouble(numbers))).toString();
-            bindToTV(numbers);
-        }
-        else {
-            bindToTV(num);
-        }
+        calc = new Calculator();
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
+        binding.btn0.setOnClickListener(numClicked);
+        binding.btn1.setOnClickListener(numClicked);
+        binding.btn2.setOnClickListener(numClicked);
+        binding.btn3.setOnClickListener(numClicked);
+        binding.btn4.setOnClickListener(numClicked);
+        binding.btn5.setOnClickListener(numClicked);
+        binding.btn6.setOnClickListener(numClicked);
+        binding.btn7.setOnClickListener(numClicked);
+        binding.btn8.setOnClickListener(numClicked);
+        binding.btn9.setOnClickListener(numClicked);
 
-        binding.btn0.setOnClickListener(btnClicked);
-        binding.btn1.setOnClickListener(btnClicked);
-        binding.btn2.setOnClickListener(btnClicked);
-        binding.btn3.setOnClickListener(btnClicked);
-        binding.btn4.setOnClickListener(btnClicked);
-        binding.btn5.setOnClickListener(btnClicked);
-        binding.btn6.setOnClickListener(btnClicked);
-        binding.btn7.setOnClickListener(btnClicked);
-        binding.btn8.setOnClickListener(btnClicked);
-        binding.btn9.setOnClickListener(btnClicked);
+        binding.btnEql.setOnClickListener(eqlClicked);
 
+        binding.btnClr.setOnClickListener(clrMethodsClicked);
+        binding.btnBack.setOnClickListener(clrMethodsClicked);
 
+        binding.btnMul.setOnClickListener(opClicked);
+        binding.btnDiv.setOnClickListener(opClicked);
+        binding.btnAdd.setOnClickListener(opClicked);
+        binding.btnSub.setOnClickListener(opClicked);
 
-        binding.btnClr.setOnClickListener(clrMethodsClickec);
-        binding.btnBack.setOnClickListener(clrMethodsClickec);
+        binding.btnSign.setOnClickListener(signClicked);
+//
+        binding.btnPoint.setOnClickListener(pointClicked);
 
-
-// ======================================================================================
-//        ========================== Handling Sign Button ===============================
-// ======================================================================================
-        binding.btnSign.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-//                Handling the sign toggling if the number is Integer or Double:
-
-                if (!(numbers.equals("0") || numbers.length() == 0)){
-                    if (numbers.contains(".")){
-                        double value = Double.parseDouble(numbers);
-                        value *= -1;
-                        numbers = Double.toString(value);
-                        bindToTV(numbers);
-                    }
-                    else {
-                        int value = Integer.parseInt(numbers);
-                        value *= -1;
-                        numbers = Integer.toString(value);
-                        bindToTV(numbers);
-                    }
-                }
-            }
-        });
-
-// ======================================================================================
-//        =========================== Handling Point Button =============================
-// ======================================================================================
-
-        binding.btnPoint.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if (numbers.contains(".")) {
-//                        Do Nothing
-                } else {
-                    numbers += ".";
-                    bindToTV(numbers);
-                }
-
-            }
-        });
 
     }
 
 
 // ======================================================================================
+//        ========================== Handling Sign Button ========================
+// ======================================================================================
+
+    View.OnClickListener signClicked = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+//                Handling the sign toggling if the number is Integer or Double:
+            if (!(calc.getNumbers().isEmpty()) || calc.getNumbers().equals("0") ){
+                calc.appendSign();
+                if (calc.isInOP()){
+                    calc.getNum2FromNumbers();
+                }else {
+                    calc.getNum1FromNumbers();
+                }
+                bindToTvCalc(calc.getNumRepresntation());
+            }
+        }
+    };
+
+
+
+// ======================================================================================
+//        =========================== Handling Point Button ========================
+// ======================================================================================
+//
+    View.OnClickListener pointClicked = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if(!(calc.getNumbers().contains("."))) {
+                calc.appendNumbers(".");
+                bindToTvCalc(calc.getNumRepresntation());
+            }
+        }
+    };
+
+// ======================================================================================
 //    the Implementation of the numbers buttons adding them to the text view :
 // ======================================================================================
 
-    View.OnClickListener btnClicked = new View.OnClickListener() {
+    View.OnClickListener numClicked = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+
+            if (binding.tvResults.getText().toString().isEmpty()) {}
+            else {bindToTvResult("");}
+
             Button btn = (Button) view;
 
-
 //            handling the condition of having multiple 0's in the first of th eTextView
-            if(numbers.equals("0")){
-                numbers = btn.getText().toString();
+            if (binding.tvCalculations.getText().toString().equals("0") && btn.getText().toString().equals("0")) {
+                calc.setNumbers("0");
             }
-            else{
-                numbers += btn.getText().toString();
+            else {
+                calc.appendNumbers(btn.getText().toString());
             }
-            checkNumber(numbers);
+            if (calc.isInOP()) {
+                calc.getNum2FromNumbers();
+                showHint();
+            } else {
+                calc.getNum1FromNumbers();
+            }
+            bindToTvCalc(calc.getNumRepresntation());
+
+            Log.d("Calc_tag","1 :"+ calc.getNum1());
+            Log.d("Calc_tag","2 :"+calc.getNum2());
+            Log.d("Calc_tag","Numbers : "+calc.getNumbers());
+
+
         }
+
     };
 
 // ======================================================================================
 //    the Implementation of the Clear button and the Back button :
 // ======================================================================================
 
-    View.OnClickListener clrMethodsClickec = new View.OnClickListener() {
+    View.OnClickListener clrMethodsClicked = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
 
 //            getting the button clicked whether Clear button or Back button:
-
             switch (view.getId()){
                 case R.id.btn_Clr:
-                    numbers = "0";
-                    bindToTV("");
+                    calc.clearNumbers();
+                    bindToTvCalc("");
+                    bindToTvHint("");
+                    bindToTvResult("");
                     break;
 
                 case R.id.btn_Back:
-
 //                    Handling the back if the length is Zero stop or the app crashes as the code
 //                    will make substring from 0 to -1
 
-                    if (numbers.length()==0){
+                    if (!(calc.isNumbersEmpty())){
+                       calc.removeLastNumber();
 
-                            }else {
-                                numbers = numbers.substring(0,numbers.length()-1);
-                        checkNumber(numbers);
-                    }
-                    break;
+                       bindToTvCalc(calc.getNumRepresntation());
 
+                       if (calc.isInOP()) {
+                           if (calc.isNumbersEmpty()) {
+                               calc.setNum2(0);
+                               bindToTvHint("");
+                           } else {
+                               calc.getNum2FromNumbers();
+                               showHint();
+                           }
+                       }
+                       else{
+                           if (calc.isNumbersEmpty())
+                               calc.setNum1(0);
+                           else
+                               calc.getNum1FromNumbers();
+                       }
+                   }
             }
         }
     };
@@ -170,11 +186,63 @@ public class MainActivity extends AppCompatActivity {
     View.OnClickListener opClicked = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            //TODO Add the basic operations of the Calculator :
+            if (!(calc.isInOP())) {
+                calc.clearNumbers();
+                Button clicked = (Button) view;
+                calc.setOperation(clicked.getText().toString());
+                bindToTvCalc(clicked.getText().toString());
+                calc.setInOP(true);
+                Log.d("Calc_tag",calc.getOperation());
+
+            }
         }
     };
 
-    private void bindToTV(String numbers) {
+// ======================================================================================
+//    the implementation of the Equal operations :
+// ======================================================================================
+
+    View.OnClickListener eqlClicked = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (calc.isInOP()){
+                if (calc.getNum2()==0 && calc.getOperation().equals("\u00F7")){
+                    Toast.makeText(MainActivity.this,"Error : Cannot divide by zero",Toast.LENGTH_SHORT).show();
+                }else {
+                    bindToTvResult(Double.toString(calc.operate()));
+                    bindToTvHint("");
+                    Log.d("Calc_tag",Double.toString(calc.operate()));
+                    calc.clearAll();
+                    calc.setInOP(false);
+                    bindToTvCalc("");
+                }
+            }
+        }
+    };
+
+
+    private void showHint (){
+        if (calc.getNum2()==0 && calc.getOperation().equals("\u00F7")){
+            Toast.makeText(MainActivity.this,"Error : Cannot divide by zero",Toast.LENGTH_SHORT).show();
+        }else {
+            bindToTvHint(Double.toString(calc.operate()));
+        }
+    }
+
+// ======================================================================================
+//    Bind with the Calculation TextView  :
+// ======================================================================================
+
+    private void bindToTvCalc(String numbers) {
         binding.tvCalculations.setText(numbers);
     }
+
+    private void bindToTvHint(String numbers) {
+        binding.tvHints.setText(numbers);
+    }
+
+    private void bindToTvResult(String numbers) {
+        binding.tvResults.setText(numbers);
+    }
+
 }

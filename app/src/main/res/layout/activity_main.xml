@@ -3,7 +3,8 @@
     android:id="@+id/lv_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="bottom"
+    android:elevation="5dp"
+    android:gravity="bottom|center|right"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -11,15 +12,17 @@
         android:id="@+id/lv_textviews"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3"
+        android:layout_weight="3.5"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/tv_calculations"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="3"
-            android:padding="20sp"
+            android:layout_weight="1.9"
+            android:paddingStart="10dp"
+            android:paddingTop="15dp"
+            android:paddingEnd="10dp"
             android:textAlignment="viewEnd"
             android:textSize="34sp" />
 
@@ -27,8 +30,9 @@
             android:id="@+id/tv_hints"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:padding="20sp"
+            android:layout_weight=".9"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
             android:textAlignment="viewEnd"
             android:textSize="20sp" />
 
@@ -37,7 +41,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:padding="20sp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
             android:textAlignment="viewEnd"
             android:textSize="34sp" />
     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -326,13 +331,13 @@
             android:textSize="32sp" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_Percent"
+            android:id="@+id/btn_sub"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_margin="10dp"
             android:layout_weight="1"
             android:background="@drawable/btnop"
-            android:text="@string/btnPercent"
+            android:text="@string/btnSub"
             android:textColor="@color/white"
             android:textSize="32sp" />
     </androidx.appcompat.widget.LinearLayoutCompat>
