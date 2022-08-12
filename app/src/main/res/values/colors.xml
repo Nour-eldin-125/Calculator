@@ -13,4 +13,12 @@
     <color name="clrTextColor">#EEDFDF</color>
     <color name="opBg">#FF9300</color>
     <color name="eqlBgL">#87E064</color>
+
+    <color name="numBgN">#302939</color>
+    <color name="clrTextColorNight">#FFFFFF</color>
+    <color name="clrBgColorNight">#963F3F</color>
+    <color name="clrTextColorN">#F8E1E1</color>
+    <color name="opBgN">#D57C02</color>
+    <color name="eqlBgN">#2C9803</color>
+    <color name="textColorN">#CFC9C9</color>
 </resources>
