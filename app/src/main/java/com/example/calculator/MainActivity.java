@@ -2,6 +2,7 @@ package com.example.calculator;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -52,8 +53,14 @@ public class MainActivity extends AppCompatActivity {
         binding.btnSub.setOnClickListener(opClicked);
 
         binding.btnSign.setOnClickListener(signClicked);
-//
+
         binding.btnPoint.setOnClickListener(pointClicked);
+
+        binding.btnMemAdd.setOnClickListener(memBtnClicked);
+        binding.btnMemSub.setOnClickListener(memBtnClicked);
+        binding.btnMemRecall.setOnClickListener(memBtnClicked);
+        binding.btnMemClr.setOnClickListener(memBtnClicked);
+
 
 
     }
@@ -72,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
                 calc.appendSign();
                 if (calc.isInOP()){
                     calc.getNum2FromNumbers();
+                    showHint();
                 }else {
                     calc.getNum1FromNumbers();
                 }
@@ -127,7 +135,8 @@ public class MainActivity extends AppCompatActivity {
             Log.d("Calc_tag","1 :"+ calc.getNum1());
             Log.d("Calc_tag","2 :"+calc.getNum2());
             Log.d("Calc_tag","Numbers : "+calc.getNumbers());
-
+            calc.setDone(false);
+            bindToTvResult("");
 
         }
 
@@ -169,8 +178,9 @@ public class MainActivity extends AppCompatActivity {
                            }
                        }
                        else{
-                           if (calc.isNumbersEmpty())
+                           if (calc.isNumbersEmpty()) {
                                calc.setNum1(0);
+                           }
                            else
                                calc.getNum1FromNumbers();
                        }
@@ -187,6 +197,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             if (!(calc.isInOP())) {
+                if (calc.isDone()){
+                    calc.setNum1(calc.getResult());
+                }
                 calc.clearNumbers();
                 Button clicked = (Button) view;
                 calc.setOperation(clicked.getText().toString());
@@ -209,25 +222,79 @@ public class MainActivity extends AppCompatActivity {
                 if (calc.getNum2()==0 && calc.getOperation().equals("\u00F7")){
                     Toast.makeText(MainActivity.this,"Error : Cannot divide by zero",Toast.LENGTH_SHORT).show();
                 }else {
-                    bindToTvResult(Double.toString(calc.operate()));
+                    double result = calc.operate();
+                    bindToTvResult(Double.toString(result));
                     bindToTvHint("");
                     Log.d("Calc_tag",Double.toString(calc.operate()));
                     calc.clearAll();
                     calc.setInOP(false);
                     bindToTvCalc("");
+                    calc.setDone(true);
+                    calc.setResult(result);
                 }
             }
         }
     };
 
 
-    private void showHint (){
-        if (calc.getNum2()==0 && calc.getOperation().equals("\u00F7")){
-            Toast.makeText(MainActivity.this,"Error : Cannot divide by zero",Toast.LENGTH_SHORT).show();
-        }else {
-            bindToTvHint(Double.toString(calc.operate()));
+    View.OnClickListener memBtnClicked = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Button btn = (Button) view;
+            switch (btn.getText().toString()){
+                case "mc":
+                    calc.setMemory(0);
+                    Log.d("Calc_tag","memory contains : " +Double.toString(calc.getMemory()));
+                    break;
+                case "mr":
+                    if (calc.isInOP()){
+                        calc.setNum2(calc.getMemory());
+                        showHint();
+                    }else {
+                        calc.setNum1(calc.getMemory());
+                    }
+                    calc.setNumbers(Double.toString(calc.getMemory()));
+                    Log.d("Calc_tag","memory contains : " +Double.toString(calc.getMemory()));
+                    bindToTvCalc(calc.getNumRepresntation());
+                    bindToTvResult("");
+                    break;
+                case "m+":
+                    if (!(calc.isInOP())){
+                        if (calc.isDone()){
+                            calc.setMemory(calc.add(calc.getResult(),calc.getMemory()));
+                        }
+                        else {
+                            calc.setMemory(calc.add(calc.getNum1(),calc.getMemory()));
+                        }
+                        calc.setNumbers(Double.toString(calc.getMemory()));
+                        bindToTvResult(calc.getNumRepresntation());
+                        Log.d("Calc_tag","memory contains : " +Double.toString(calc.getMemory()));
+
+                        calc.clearAll();
+                        bindToTvCalc("");
+                    }
+                    break;
+                case "m-":
+                    if (!(calc.isInOP())) {
+                        if (calc.isDone()){
+                            calc.setMemory(calc.add(calc.getResult(),calc.getMemory()));
+                        }
+                        else {
+                            calc.setMemory(calc.sub(calc.getMemory(), calc.getNum1()));
+                        }
+                        calc.setNumbers(Double.toString(calc.getMemory()));
+                        bindToTvResult(calc.getNumRepresntation());
+                        Log.d("Calc_tag", "memory contains : " + Double.toString(calc.getMemory()));
+                        calc.clearAll();
+                        bindToTvCalc("");
+                    }
+                    break;
+            }
+
+
         }
-    }
+    };
+
 
 // ======================================================================================
 //    Bind with the Calculation TextView  :
@@ -244,5 +311,14 @@ public class MainActivity extends AppCompatActivity {
     private void bindToTvResult(String numbers) {
         binding.tvResults.setText(numbers);
     }
+
+    private void showHint (){
+        if (calc.getNum2()==0 && calc.getOperation().equals("\u00F7")){
+            Toast.makeText(MainActivity.this,"Error : Cannot divide by zero",Toast.LENGTH_SHORT).show();
+        }else {
+            bindToTvHint(Double.toString(calc.operate()));
+        }
+    }
+
 
 }

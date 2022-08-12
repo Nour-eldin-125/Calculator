@@ -16,6 +16,10 @@ public class Calculator {
     private boolean inOP =false;
     private boolean isDoubleNum1,isDoubleNum2;
     private boolean numpPositve;
+    private double result;
+    private boolean done;
+    private double memory;
+
 
 
 
@@ -23,6 +27,8 @@ public class Calculator {
         numFormat = new DecimalFormat(".");
         eFormat = new DecimalFormat("0.##########E0");
         numbers = "";
+        memory = 0;
+        done = false;
         operation = "";
         numpPositve = true;
         inOP = false;
@@ -142,6 +148,30 @@ public class Calculator {
         this.eFormat = eFormat;
     }
 
+    public double getResult() {
+        return result;
+    }
+
+    public void setResult(double result) {
+        this.result = result;
+    }
+
+    public boolean isDone() {
+        return done;
+    }
+
+    public void setDone(boolean done) {
+        this.done = done;
+    }
+
+    public double getMemory() {
+        return memory;
+    }
+
+    public void setMemory(double memory) {
+        this.memory = memory;
+    }
+
     public void appendNumbers (String num){
         if (numbers.equals("0")){
             if (num.equals(".")) {numbers += num;}
@@ -230,5 +260,6 @@ public class Calculator {
         }
         return result;
     }
+
 
 }
