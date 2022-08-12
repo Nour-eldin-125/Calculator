@@ -3,11 +3,18 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/College/Nour/Semester8.5_(Summer)/Mobile Programming/Projects/Calculator_Final_project/app/src/main/res/drawable/btn_clr_n.xml" value="0.293" />
+        <entry key="..\:/College/Nour/Semester8.5_(Summer)/Mobile Programming/Projects/Calculator_Final_project/app/src/main/res/drawable/btn_eql_n.xml" value="0.293" />
+        <entry key="..\:/College/Nour/Semester8.5_(Summer)/Mobile Programming/Projects/Calculator_Final_project/app/src/main/res/drawable/btn_num_night.xml" value="0.293" />
+        <entry key="..\:/College/Nour/Semester8.5_(Summer)/Mobile Programming/Projects/Calculator_Final_project/app/src/main/res/drawable/btn_op_n.xml" value="0.293" />
         <entry key="..\:/College/Nour/Semester8.5_(Summer)/Mobile Programming/Projects/Calculator_Final_project/app/src/main/res/drawable/btnclr.xml" value="0.1" />
         <entry key="..\:/College/Nour/Semester8.5_(Summer)/Mobile Programming/Projects/Calculator_Final_project/app/src/main/res/drawable/btneql.xml" value="0.1" />
         <entry key="..\:/College/Nour/Semester8.5_(Summer)/Mobile Programming/Projects/Calculator_Final_project/app/src/main/res/drawable/btnnum.xml" value="0.197" />
         <entry key="..\:/College/Nour/Semester8.5_(Summer)/Mobile Programming/Projects/Calculator_Final_project/app/src/main/res/drawable/btnop.xml" value="0.167" />
         <entry key="..\:/College/Nour/Semester8.5_(Summer)/Mobile Programming/Projects/Calculator_Final_project/app/src/main/res/drawable/numbtn.xml" value="0.1" />
+        <entry key="..\:/College/Nour/Semester8.5_(Summer)/Mobile Programming/Projects/Calculator_Final_project/app/src/main/res/layout-land-night/activity_main.xml" value="0.2791411042944785" />
+        <entry key="..\:/College/Nour/Semester8.5_(Summer)/Mobile Programming/Projects/Calculator_Final_project/app/src/main/res/layout-land/acitvity_main.xml" value="0.2782646801051709" />
+        <entry key="..\:/College/Nour/Semester8.5_(Summer)/Mobile Programming/Projects/Calculator_Final_project/app/src/main/res/layout-land/activity_main.xml" value="0.2782646801051709" />
         <entry key="..\:/College/Nour/Semester8.5_(Summer)/Mobile Programming/Projects/Calculator_Final_project/app/src/main/res/layout-night/activity_main.xml" value="0.271483539974348" />
         <entry key="..\:/College/Nour/Semester8.5_(Summer)/Mobile Programming/Projects/Calculator_Final_project/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/College/Nour/Semester8.5_(Summer)/Mobile Programming/Projects/Calculator_Final_project/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.2085" />
