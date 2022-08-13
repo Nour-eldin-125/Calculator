@@ -157,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
                     bindToTvCalc("");
                     bindToTvHint("");
                     bindToTvResult("");
+                    calc.setInOP(false);
                     break;
 
                 case R.id.btn_Back:
