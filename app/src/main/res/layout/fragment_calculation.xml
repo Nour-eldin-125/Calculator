@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CalculationFragment">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/lv_textviews"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_calculations"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.9"
+            android:gravity="center_vertical|end"
+            android:paddingStart="10dp"
+            android:paddingTop="15dp"
+            android:paddingEnd="10dp"
+            android:textAlignment="viewEnd"
+            android:textSize="34sp" />
+
+        <TextView
+            android:id="@+id/tv_hints"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".9"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:textAlignment="viewEnd"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tv_results"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.3"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:textAlignment="viewEnd"
+            android:textSize="34sp" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</FrameLayout>
