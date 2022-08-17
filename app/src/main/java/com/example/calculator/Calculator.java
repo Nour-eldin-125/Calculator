@@ -1,5 +1,6 @@
 package com.example.calculator;
 
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.calculator.databinding.ActivityMainBinding;
@@ -9,11 +10,12 @@ import java.text.NumberFormat;
 
 public class Calculator {
     private String numbers;
+    private String backupnums;
     private NumberFormat numFormat;
     private NumberFormat eFormat;
     private double num1,num2;
     private String operation;
-    private boolean inOP =false;
+    private boolean inOP;
     private boolean isDoubleNum1,isDoubleNum2;
     private boolean numpPositve;
     private double result;
@@ -148,6 +150,14 @@ public class Calculator {
         this.eFormat = eFormat;
     }
 
+    public String getBackupnums() {
+        return backupnums;
+    }
+
+    public void setBackupnums(String backupnums) {
+        this.backupnums = backupnums;
+    }
+
     public double getResult() {
         return result;
     }
@@ -167,6 +177,7 @@ public class Calculator {
     public double getMemory() {
         return memory;
     }
+
 
     public void setMemory(double memory) {
         this.memory = memory;
@@ -199,17 +210,31 @@ public class Calculator {
         numbers="";
         num1=0;
         num2=0;
+        backupnums="";
     }
 
     public void getNum1FromNumbers (){
-        num1 = Double.parseDouble(numbers);
+        if (numbers.equals("-") || numbers.equals(".")){
+            num1 = 0;
+        }else {
+            num1 = Double.parseDouble(numbers);
+        }
     }
-    public void getNum2FromNumbers (){
-        num2 = Double.parseDouble(numbers);
+    public void getNum2FromNumbers () {
+        if (numbers.equals("-") || numbers.equals(".")) {
+            num2 = 0;
+        } else {
+            num2 = Double.parseDouble(numbers);
+        }
     }
     public void removeLastNumber(){
         if (numbers.length()==1){
             numbers="";
+        }
+        else if (numbers.contains("E")){
+            Double num = Double.parseDouble(numbers);
+            numbers = Double.toString(num);
+            numbers = numbers.substring(0,numbers.length()-1);
         }
         else{
             numbers = numbers.substring(0,numbers.length()-1);

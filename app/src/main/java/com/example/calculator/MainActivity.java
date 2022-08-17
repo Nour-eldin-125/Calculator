@@ -1,5 +1,6 @@
 package com.example.calculator;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,15 +13,25 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.calculator.Db.HistoryEntity;
 import com.example.calculator.databinding.ActivityMainBinding;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     MyViewModel viewmodel;
     Calculator calc;
     private ActivityMainBinding binding;
+    FragmentManager frag;
+    FragmentTransaction ftrans;
+    CalculationFragment fragcalc;
+    HistoryFragment fraghis;
+    boolean incalcfrag = true;
+    HistoryViewModel hsVM;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,10 +43,11 @@ public class MainActivity extends AppCompatActivity {
         actionBar.hide();
 
 
-        FragmentManager frag = getSupportFragmentManager();
-        FragmentTransaction ftrans = frag.beginTransaction();
-        CalculationFragment fragcalc = new CalculationFragment();
-        ftrans.add(R.id.fragmentContainerView,fragcalc);
+        frag = getSupportFragmentManager();
+        ftrans = frag.beginTransaction();
+        fragcalc = new CalculationFragment();
+        fraghis = new HistoryFragment();
+        ftrans.add(binding.fragmentContainerView.getId(),fragcalc);
         ftrans.commit();
 
         viewmodel = new ViewModelProvider(this).get(MyViewModel.class);
@@ -81,7 +93,10 @@ public class MainActivity extends AppCompatActivity {
         binding.btnMemRecall.setOnClickListener(memBtnClicked);
         binding.btnMemClr.setOnClickListener(memBtnClicked);
 
+        binding.btnHistory.setOnClickListener(changefragments);
 
+
+        hsVM = new ViewModelProvider(this).get(HistoryViewModel.class);
 
     }
 
@@ -129,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
 
+            changetocalcfrag();
 //                Handling the sign toggling if the number is Integer or Double:
             if (!(calc.getNumbers().isEmpty()) || calc.getNumbers().equals("0") ){
                 calc.appendSign();
@@ -152,6 +168,8 @@ public class MainActivity extends AppCompatActivity {
     View.OnClickListener pointClicked = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+
+            changetocalcfrag();
             if(!(calc.getNumbers().contains("."))) {
                 calc.appendNumbers(".");
                 bindToTvCalculation(calc.getNumRepresntation());
@@ -167,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
 
+            changetocalcfrag();
             clearRes();
             Button btn = (Button) view;
 
@@ -204,6 +223,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
 
+            changetocalcfrag();
 //            getting the button clicked whether Clear button or Back button:
             switch (view.getId()){
                 case R.id.btn_Clr:
@@ -215,15 +235,24 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.btn_Back:
 //                    Handling the back if the length is Zero stop or the app crashes as the code
 //                    will make substring from 0 to -1
-
+                    boolean erase = true;
+                    if (calc.isInOP() && calc.getNumbers().equals("")){
+                        calc.setInOP(false);
+                        erase = false;
+                        calc.setNumbers(calc.getBackupnums());
+                        bindToTvCalculation(calc.getNumRepresntation());
+                    }
                     if (!(calc.isNumbersEmpty())){
-                        calc.removeLastNumber();
-
+                        if (erase) {
+                            calc.removeLastNumber();
+                            erase = true;
+                        }
                         bindToTvCalculation(calc.getNumRepresntation());
 
                         if (calc.isInOP()) {
                             if (calc.isNumbersEmpty()) {
                                 calc.setNum2(0);
+                                bindToTvCalculation(calc.getOperation());
                                 bindToTvHint("");
                             } else {
                                 calc.getNum2FromNumbers();
@@ -238,6 +267,7 @@ public class MainActivity extends AppCompatActivity {
                                 calc.getNum1FromNumbers();
                         }
                     }
+
             }
         }
     };
@@ -249,10 +279,13 @@ public class MainActivity extends AppCompatActivity {
     View.OnClickListener opClicked = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+
+            changetocalcfrag();
             if (!(calc.isInOP())) {
                 if (calc.isDone()){
                     calc.setNum1(calc.getResult());
                 }
+                calc.setBackupnums(calc.getNumbers());
                 calc.clearNumbers();
                 Button clicked = (Button) view;
                 calc.setOperation(clicked.getText().toString());
@@ -271,11 +304,16 @@ public class MainActivity extends AppCompatActivity {
     View.OnClickListener eqlClicked = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+
+            changetocalcfrag();
             if (calc.isInOP()){
                 if (calc.getNum2()==0 && calc.getOperation().equals("\u00F7")){
                     Toast.makeText(MainActivity.this,"Error : Cannot divide by zero",Toast.LENGTH_SHORT).show();
                 }else {
                     double result = calc.operate();
+                    String word = Double.toString(calc.getNum1())+ " " + calc.getOperation() + " " + Double.toString(calc.getNum2());
+                    String wres = Double.toString(result);
+                    hsVM.insert(new HistoryEntity(word,wres));
                     bindToTvResult(Double.toString(result));
                     bindToTvHint("");
                     Log.d("Calc_tag",Double.toString(calc.operate()));
@@ -298,6 +336,8 @@ public class MainActivity extends AppCompatActivity {
     View.OnClickListener memBtnClicked = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+
+            changetocalcfrag();
             Button btn = (Button) view;
             switch (btn.getText().toString()){
                 // memory clear
@@ -363,6 +403,22 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    View.OnClickListener changefragments = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            frag = getSupportFragmentManager();
+            ftrans = frag.beginTransaction();
+            if (incalcfrag){
+                ftrans.replace(binding.fragmentContainerView.getId(),fraghis);
+                incalcfrag =false;
+            }else {
+                ftrans.replace(binding.fragmentContainerView.getId(),fragcalc);
+                incalcfrag =true;
+            }
+            ftrans.commit();
+        }
+    };
+
 
 // ======================================================================================
 //    Bind with the Calculation TextView  :
@@ -399,6 +455,15 @@ public class MainActivity extends AppCompatActivity {
         }else {
             bindToTvHint(Double.toString(calc.operate()));
         }
+    }
+
+    private void changetocalcfrag ()
+    {
+        frag = getSupportFragmentManager();
+        ftrans = frag.beginTransaction();
+        ftrans.replace(binding.fragmentContainerView.getId(),fragcalc);
+        incalcfrag =true;
+        ftrans.commit();
     }
 
 
