@@ -10,17 +10,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentActivity;
+
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
+
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.calculator.Db.HistoryEntity;
 import com.example.calculator.databinding.ActivityMainBinding;
 
 import java.math.BigDecimal;
-import java.util.List;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -251,12 +251,15 @@ public class MainActivity extends AppCompatActivity {
                         calc.setNum2(Double.parseDouble(calc.getBackUpNum2()));
                         calc.setNumbers(calc.getBackUpNum2());
                         bindToTvCalculation(calc.getNumRepresntation());
+                        bindToTvResult("");
                         calc.setDone(false);
+
                     } else if (calc.isInOP() && calc.getNumbers().equals("")){
                         calc.setInOP(false);
                         erase = false;
                         calc.setNumbers(calc.getBackUpNum1());
                         bindToTvCalculation(calc.getNumRepresntation());
+
                     }else if (!(calc.isNumbersEmpty())){
                         if (erase) {
                             calc.removeLastNumber();
@@ -301,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
                 if (calc.isDone()){
                     calc.setNum1(calc.getResult());
                 }
-                calc.setBackUpNum1(new BigDecimal(calc.getNum1()).toPlainString());
+                calc.setBackUpNum1(calc.getNumbers());
                 calc.clearNumbers();
                 Button clicked = (Button) view;
                 calc.setOperation(clicked.getText().toString());
@@ -332,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
                     //                    Send value to the database :
 
                     String word = calc.getBackUpNum1()+ " " + calc.getOperation() + " " + calc.getBackUpNum2();
-                    String wres =new BigDecimal(result).toPlainString();
+                    String wres =Double.toString(result);
                     hsVM.insert(new HistoryEntity(word,wres));
                     bindToTvResult(calc.getRepresntation(wres));
                     bindToTvHint("");
