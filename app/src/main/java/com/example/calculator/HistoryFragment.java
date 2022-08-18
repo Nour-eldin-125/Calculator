@@ -1,5 +1,6 @@
 package com.example.calculator;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.calculator.Db.HistoryEntity;
+import com.example.calculator.databinding.ActivityMainBinding;
 
 import java.util.List;
 
@@ -103,7 +105,6 @@ public class HistoryFragment extends Fragment {
                 hsViewModel.delete(rva.gethis(i));
             }
         }).attachToRecyclerView(mrv);
-
 
 
     }

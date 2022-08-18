@@ -1,6 +1,5 @@
 package com.example.calculator;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
@@ -19,19 +19,21 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.calculator.Db.HistoryEntity;
 import com.example.calculator.databinding.ActivityMainBinding;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    MyViewModel viewmodel;
-    Calculator calc;
+    private MyViewModel viewmodel;
+    private Calculator calc;
     private ActivityMainBinding binding;
-    FragmentManager frag;
-    FragmentTransaction ftrans;
-    CalculationFragment fragcalc;
-    HistoryFragment fraghis;
-    boolean incalcfrag = true;
-    HistoryViewModel hsVM;
+    private FragmentManager frag;
+    private FragmentTransaction ftrans;
+    private CalculationFragment fragcalc;
+    private HistoryFragment fraghis;
+    private boolean incalcfrag = true;
+    private HistoryViewModel hsVM;
+    private ResViewModel resViewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -189,6 +191,11 @@ public class MainActivity extends AppCompatActivity {
             clearRes();
             Button btn = (Button) view;
 
+            if (calc.isDone()){
+                calc.setDone(false);
+                calc.setBackUpNum1("");
+                calc.setBackUpNum2("");
+            }
 //            handling the condition of having multiple 0's in the first of th eTextView
             if (viewmodel.getmessege().getValue().equals("0") && btn.getText().toString().equals("0")) {
                 calc.setNumbers("0");
@@ -229,6 +236,8 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.btn_Clr:
                     calc.clearNumbers();
                     clearAll();
+                    calc.setBackUpNum1("");
+                    calc.setBackUpNum2("");
                     calc.setInOP(false);
                     break;
 
@@ -236,13 +245,19 @@ public class MainActivity extends AppCompatActivity {
 //                    Handling the back if the length is Zero stop or the app crashes as the code
 //                    will make substring from 0 to -1
                     boolean erase = true;
-                    if (calc.isInOP() && calc.getNumbers().equals("")){
+                    if (calc.isDone()){
+                        calc.setInOP(true);
+                        calc.setNum1(Double.parseDouble(calc.getBackUpNum1()));
+                        calc.setNum2(Double.parseDouble(calc.getBackUpNum2()));
+                        calc.setNumbers(calc.getBackUpNum2());
+                        bindToTvCalculation(calc.getNumRepresntation());
+                        calc.setDone(false);
+                    } else if (calc.isInOP() && calc.getNumbers().equals("")){
                         calc.setInOP(false);
                         erase = false;
-                        calc.setNumbers(calc.getBackupnums());
+                        calc.setNumbers(calc.getBackUpNum1());
                         bindToTvCalculation(calc.getNumRepresntation());
-                    }
-                    if (!(calc.isNumbersEmpty())){
+                    }else if (!(calc.isNumbersEmpty())){
                         if (erase) {
                             calc.removeLastNumber();
                             erase = true;
@@ -280,12 +295,13 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
 
+            bindToTvResult("");
             changetocalcfrag();
             if (!(calc.isInOP())) {
                 if (calc.isDone()){
                     calc.setNum1(calc.getResult());
                 }
-                calc.setBackupnums(calc.getNumbers());
+                calc.setBackUpNum1(new BigDecimal(calc.getNum1()).toPlainString());
                 calc.clearNumbers();
                 Button clicked = (Button) view;
                 calc.setOperation(clicked.getText().toString());
@@ -311,12 +327,16 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this,"Error : Cannot divide by zero",Toast.LENGTH_SHORT).show();
                 }else {
                     double result = calc.operate();
-                    String word = Double.toString(calc.getNum1())+ " " + calc.getOperation() + " " + Double.toString(calc.getNum2());
-                    String wres = Double.toString(result);
+                    calc.setBackUpNum2(calc.getNumbers());
+
+                    //                    Send value to the database :
+
+                    String word = calc.getBackUpNum1()+ " " + calc.getOperation() + " " + calc.getBackUpNum2();
+                    String wres =new BigDecimal(result).toPlainString();
                     hsVM.insert(new HistoryEntity(word,wres));
-                    bindToTvResult(Double.toString(result));
+                    bindToTvResult(calc.getRepresntation(wres));
                     bindToTvHint("");
-                    Log.d("Calc_tag",Double.toString(calc.operate()));
+
                     calc.clearAll();
                     calc.setInOP(false);
                     bindToTvCalculation("");
@@ -453,7 +473,7 @@ public class MainActivity extends AppCompatActivity {
         if (calc.getNum2()==0 && calc.getOperation().equals("\u00F7")){
             Toast.makeText(MainActivity.this,"Error : Cannot divide by zero",Toast.LENGTH_SHORT).show();
         }else {
-            bindToTvHint(Double.toString(calc.operate()));
+            bindToTvHint(calc.getRepresntation(Double.toString(calc.operate())));
         }
     }
 

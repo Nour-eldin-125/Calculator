@@ -1,16 +1,11 @@
 package com.example.calculator;
 
-import android.util.Log;
-import android.widget.Toast;
-
-import com.example.calculator.databinding.ActivityMainBinding;
-
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 public class Calculator {
     private String numbers;
-    private String backupnums;
+    private String backUpNum1,backUpNum2;
     private NumberFormat numFormat;
     private NumberFormat eFormat;
     private double num1,num2;
@@ -27,7 +22,7 @@ public class Calculator {
 
     public Calculator() {
         numFormat = new DecimalFormat(".");
-        eFormat = new DecimalFormat("0.##########E0");
+        eFormat = new DecimalFormat("0.#######E0");
         numbers = "";
         memory = 0;
         done = false;
@@ -87,7 +82,10 @@ public class Calculator {
     }
 
     public String getNumRepresntation() {
-        return checkNumber();
+        return checkNumber(numbers);
+    }
+    public String getRepresntation(String num) {
+        return checkNumber(num);
     }
 
     public double getNum2() {
@@ -138,9 +136,6 @@ public class Calculator {
         this.numpPositve = numpPositve;
     }
 
-    public NumberFormat geteFormat() {
-        return eFormat;
-    }
 
     public String formatNumber (String num){
         return numFormat.format(Double.parseDouble(num));
@@ -150,12 +145,20 @@ public class Calculator {
         this.eFormat = eFormat;
     }
 
-    public String getBackupnums() {
-        return backupnums;
+    public String getBackUpNum2() {
+        return backUpNum2;
     }
 
-    public void setBackupnums(String backupnums) {
-        this.backupnums = backupnums;
+    public void setBackUpNum2(String backUpNum2) {
+        this.backUpNum2 = backUpNum2;
+    }
+
+    public String getBackUpNum1() {
+        return backUpNum1;
+    }
+
+    public void setBackUpNum1(String backUpNum1) {
+        this.backUpNum1 = backUpNum1;
     }
 
     public double getResult() {
@@ -210,7 +213,6 @@ public class Calculator {
         numbers="";
         num1=0;
         num2=0;
-        backupnums="";
     }
 
     public void getNum1FromNumbers (){
@@ -247,12 +249,12 @@ public class Calculator {
     }
 
 
-    private String checkNumber (){
+    private String checkNumber (String numbers){
         String num = numbers;
         int count = num.length();
         if (num.contains(".") || num.contains("-"))
             count--;
-        if (count>10){
+        if (count>16){
             num = (eFormat.format(Double.parseDouble(num))).toString();
             return num;
         }
