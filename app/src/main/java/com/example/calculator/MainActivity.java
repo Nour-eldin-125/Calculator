@@ -117,6 +117,9 @@ public class MainActivity extends AppCompatActivity {
         outState.putString("op",calc.getOperation());
         outState.putDouble("res",calc.getResult());
 
+        outState.putString("bakup1",calc.getBackUpNum1());
+        outState.putString("backup2",calc.getBackUpNum2());
+
         Log.d("Calc_tag", "onSaveInstanceState: "+viewmodel.getmessege().getValue().toArray(new String[0]));
     }
 
@@ -134,6 +137,8 @@ public class MainActivity extends AppCompatActivity {
         calc.setNum2(savedInstanceState.getDouble("Num2"));
         calc.setOperation(savedInstanceState.getString("op"));
         calc.setResult(savedInstanceState.getDouble("res"));
+        calc.setBackUpNum1(savedInstanceState.getString("bakup1"));
+        calc.setBackUpNum1(savedInstanceState.getString("backup2"));
         Log.d("Calc_tag", "onSaveInstanceState: "+viewmodel.getmessege().getValue().get(0));
     }
 
@@ -405,6 +410,7 @@ public class MainActivity extends AppCompatActivity {
 
 //                    memory subtract subtracts the number of the first operation to the original memory value (Default = 0)
 
+                //TODO   <<< create method for transforming from double to strings >>>
                 case "m-":
                     if (!(calc.isInOP())) {
                         if (calc.isDone()){
