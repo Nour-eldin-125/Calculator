@@ -21,8 +21,8 @@ public class Calculator {
 
 
     public Calculator() {
-        numFormat = new DecimalFormat(".");
-        eFormat = new DecimalFormat("0.#######E0");
+        numFormat = new DecimalFormat("#.######");
+        eFormat = new DecimalFormat("0.#####E0");
         numbers = "";
         memory = 0;
         done = false;
@@ -65,8 +65,8 @@ public class Calculator {
         this.numbers = numbers;
     }
 
-    public NumberFormat getNumFormat() {
-        return numFormat;
+    public String getNumFormat(double d) {
+        return numFormat.format(d).toString();
     }
 
     public void setNumFormat(NumberFormat numFormat) {

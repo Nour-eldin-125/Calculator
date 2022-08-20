@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
     private HistoryFragment fraghis;
     private boolean incalcfrag = true;
     private HistoryViewModel hsVM;
-    private ResViewModel resViewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,10 +40,12 @@ public class MainActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
         calc = new Calculator();
+
+//        hides the bar on top of the application
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
 
-
+//        Dynamically calling of the fragment of calculation in the begining of the code
         frag = getSupportFragmentManager();
         ftrans = frag.beginTransaction();
         fragcalc = new CalculationFragment();
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         ftrans.add(binding.fragmentContainerView.getId(),fragcalc);
         ftrans.commit();
 
+//        initializing the view model of the first fragment that handle the text views and sends the changes to them
         viewmodel = new ViewModelProvider(this).get(MyViewModel.class);
         viewmodel.init();
 
@@ -61,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+//        makes the app fullscreen and hide notification status on teh top of the app
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         // binding the buttons with its functions :
@@ -97,12 +100,12 @@ public class MainActivity extends AppCompatActivity {
 
         binding.btnHistory.setOnClickListener(changefragments);
 
-
+//        the delcleration of the history view model that handles the database and updating the history fragment
         hsVM = new ViewModelProvider(this).get(HistoryViewModel.class);
 
     }
 
-//    Saved Instances of the first and second numbers of the operation the live data to represent on the textview and the result and if the change in orintation happened
+//    Saved Instances of the first and second numbers of the operation the live data to represent on the textview and the result and if the change in orientation happened
 //    within a running operation or not
 
     @Override
@@ -152,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View view) {
 
             changetocalcfrag();
-//                Handling the sign toggling if the number is Integer or Double:
+//                handling the toggeling of the zero it skips the toggle in this case
             if (!(calc.getNumbers().isEmpty()) || calc.getNumbers().equals("0") ){
                 calc.appendSign();
                 if (calc.isInOP()){
@@ -168,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    // ======================================================================================
+// ======================================================================================
 //        =========================== Handling Point Button ========================
 // ======================================================================================
 //
@@ -177,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View view) {
 
             changetocalcfrag();
+//            handles the multiple spamming of the point button no multiple points
             if(!(calc.getNumbers().contains("."))) {
                 calc.appendNumbers(".");
                 bindToTvCalculation(calc.getNumRepresntation());
@@ -192,10 +196,13 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
 
+//            goes to the fragment of the calculation if user in the history fragment
             changetocalcfrag();
             clearRes();
             Button btn = (Button) view;
 
+//            if the user clicks on a number it is not in done state it goes to operation state to
+//            handle the new operation and clears the values in the bakups of the first and second operands
             if (calc.isDone()){
                 calc.setDone(false);
                 calc.setBackUpNum1("");
@@ -305,9 +312,11 @@ public class MainActivity extends AppCompatActivity {
 
             bindToTvResult("");
             changetocalcfrag();
+//            if user is in done state it means he clicked on the operation after the equals so the result of the previous operation goes to the first operand
             if (!(calc.isInOP())) {
                 if (calc.isDone()){
                     calc.setNum1(calc.getResult());
+                    calc.setDone(false);
                 }
                 calc.setBackUpNum1(calc.getNumbers());
                 calc.clearNumbers();
